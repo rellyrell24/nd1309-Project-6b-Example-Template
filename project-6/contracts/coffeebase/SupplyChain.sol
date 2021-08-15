@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.7;
+pragma solidity >= 0.8.0;
 
 import "../coffeeaccesscontrol/ConsumerRole.sol";
 import "../coffeeaccesscontrol/DistributorRole.sol";
@@ -41,7 +41,8 @@ contract SupplyChain {
     Sold,       // 4
     Shipped,    // 5
     Received,   // 6
-    Purchased   // 7
+    Purchased,  // 7
+    None        // 8
     }
 
   State constant defaultState = State.Harvested;
@@ -137,7 +138,7 @@ contract SupplyChain {
   modifier checkValue(uint256 _price, address _purchaser) {
     _;
     uint amountToReturn = msg.value - _price;
-    payable(_purchaser).transfer(amountToReturn);
+    _make_payable(_purchaser).transfer(amountToReturn);
   }
 
   // Define a modifier that checks if an item.state of a upc is None (first state)
@@ -232,17 +233,21 @@ contract SupplyChain {
 
   // Define a function 'kill' if required
   function kill() public {
-    if (msg.sender == owner) {
-      selfdestruct(owner);
+    if (msg.sender == ownable.owner()) {
+      selfdestruct(_make_payable(ownable.owner()));
     }
   }
 
   function owner() public view returns (address) {
-      return ownable.owner();
+    return ownable.owner();
+  }
+
+  function _make_payable(address x) internal pure returns (address payable) {
+    return payable(address(uint160(x)));
   }
 
   // Define a function 'harvestItem' that allows a farmer to mark an item 'Harvested'
-  function harvestItem(uint _upc, address _originFarmerID, string _originFarmName, string _originFarmInformation, string  _originFarmLatitude, string  _originFarmLongitude, string  _productNotes) public 
+  function harvestItem(uint _upc, address _originFarmerID, string memory _originFarmName, string memory _originFarmInformation, string memory _originFarmLatitude, string memory _originFarmLongitude, string memory _productNotes) public 
   none(_upc) onlyFarmer()
   {
     // Add the new item as part of Harvest
@@ -323,7 +328,7 @@ contract SupplyChain {
   // and any excess ether sent is refunded back to the buyer
   function buyItem(uint _upc) public payable 
     // Call modifier to check if upc has passed previous supply chain stage
-    forSale()
+    forSale(_upc)
     onlyDistributor()
     // Call modifer to check if buyer has paid enough
     paidEnough(items[_upc].productPrice)
@@ -348,7 +353,7 @@ contract SupplyChain {
   // Use the above modifers to check if the item is sold
   function shipItem(uint _upc) public 
     // Call modifier to check if upc has passed previous supply chain stage
-    sold()
+    sold(_upc)
     // Call modifier to verify caller of this function
     onlyDistributor()
     verifyCaller(items[_upc].distributorID)
@@ -409,10 +414,10 @@ contract SupplyChain {
     uint    itemUPC,
     address ownerID,
     address originFarmerID,
-    string  originFarmName,
-    string  originFarmInformation,
-    string  originFarmLatitude,
-    string  originFarmLongitude
+    string memory originFarmName,
+    string memory originFarmInformation,
+    string memory originFarmLatitude,
+    string memory originFarmLongitude
   ) 
   {
     // Assign values to the 8 parameters
@@ -445,7 +450,7 @@ contract SupplyChain {
     uint    itemSKU,
     uint    itemUPC,
     uint    productID,
-    string  productNotes,
+    string memory productNotes,
     uint    productPrice,
     uint    itemState,
     address distributorID,
@@ -497,7 +502,8 @@ contract SupplyChain {
     itemState,
     distributorID,
     retailerID,
-    consumerID
+    consumerID,
+    retailPrice
     );
   }
 
@@ -519,19 +525,19 @@ contract SupplyChain {
 
   // Expose methods to remove roles
   function renounceConsumer() public onlyConsumer() {
-    consumerRole.renounceConsumer(msg.sender);
+    consumerRole.renounceConsumer();
   }
 
   function renounceDistributor() public onlyDistributor() {
-    distributorRole.renounceDistributor(msg.sender);
+    distributorRole.renounceDistributor();
   }
 
   function renounceFarmer() public onlyFarmer() {
-    farmerRole.renounceFarmer(msg.sender);
+    farmerRole.renounceFarmer();
   }
 
   function renounceRetailer() public onlyRetailer() {
-    retailerRole.renounceRetailer(msg.sender);
+    retailerRole.renounceRetailer();
   }
 
   function isFarmer(address _address) public view returns (bool) {
