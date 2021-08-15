@@ -1,0 +1,92 @@
+body {
+background-color:#fff;
+padding: 2em;
+font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+color: #212121;
+}
+.container {
+width: 80%;
+margin: 0 auto;
+}
+
+
+.bold { 
+font-weight: bolder;
+}
+
+input {
+    width: 80%;
+    padding: 12px 20px;
+    margin: 10px 0;
+}
+
+button {
+    cursor: pointer;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    background-color: #00BCD4;
+    font-size: 16px;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+
+.ftc-intro {
+background-color:#0097A7;
+color:white;
+width:100%;
+padding:20px;
+}
+
+.form-group {
+background-color:#0097A7;
+color:black;
+width:50%;
+padding:30px;
+border-radius: 4px;
+background-color: #f8f8f8;
+}
+
+.form-break {
+background-color:#fff;
+color:white;
+width:100%;
+padding:5px;
+}
+
+.product-overview p{
+display: inline-block;
+width:20%;
+}
+
+
+/* Style tab links */
+.tablink {
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 17px;
+    width: 25%;
+}
+
+.menu button{
+    display:inline-block;
+}
+
+.tablink:hover {
+    background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+    color: white;
+    display: none;
+    padding: 100px 20px;
+    height: 100%;
+}

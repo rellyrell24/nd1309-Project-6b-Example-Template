@@ -34,16 +34,16 @@ contract SupplyChain {
   // Define enum 'State' with the following values:
   enum State 
   { 
-    Harvested,  // 0
-    Processed,  // 1
-    Packed,     // 2
-    ForSale,    // 3
-    Sold,       // 4
-    Shipped,    // 5
-    Received,   // 6
-    Purchased,  // 7
-    None        // 8
-    }
+    None,       // 0
+    Harvested,  // 1
+    Processed,  // 2
+    Packed,     // 3
+    ForSale,    // 4
+    Sold,       // 5
+    Shipped,    // 6
+    Received,   // 7
+    Purchased   // 8
+  }
 
   State constant defaultState = State.Harvested;
 
@@ -308,7 +308,7 @@ contract SupplyChain {
   // Define a function 'sellItem' that allows a farmer to mark an item 'ForSale'
   function sellItem(uint _upc, uint _price) public 
   // Call modifier to check if upc has passed previous supply chain stage
-  processed(_upc)
+  packed(_upc)
   // Call modifier to verify caller of this function
   onlyFarmer()
   verifyCaller(items[_upc].originFarmerID)
